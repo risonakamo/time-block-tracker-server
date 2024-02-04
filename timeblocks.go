@@ -12,7 +12,7 @@ import (
 // timeblocks dict
 // key: timeblock id
 // val: the timeblock
-type TimeBlocks map[string]TimeBlock
+type TimeBlocks map[string]*TimeBlock
 
 // main time block struct
 type TimeBlock struct {
@@ -38,9 +38,38 @@ type TimeRow struct {
 func addTimeBlock(timeblocks TimeBlocks) TimeBlocks {
     var newblock TimeBlock=newTimeBlock()
 
-    timeblocks[newblock.Id]=newblock
+    timeblocks[newblock.Id]=&newblock
 
     return timeblocks
+}
+
+// toggle running state of a time block in time blocks dict
+func toggleTimeBlock(timeblocks TimeBlocks,timeblockId string) {
+    var exists bool
+    _,exists=timeblocks[timeblockId]
+
+    if !exists {
+        fmt.Printf("could not find timeblock id to toggle: %v\n",timeblockId)
+        return
+    }
+
+    timeblocks[timeblockId].ToggleTimer()
+}
+
+func changeTimeBlockTitle(
+    timeblocks TimeBlocks,
+    timeblockId string,
+    newTitle string,
+) {
+    var exists bool
+    _,exists=timeblocks[timeblockId]
+
+    if !exists {
+        fmt.Printf("could not find timeblock id to change title: %v\n",timeblockId)
+        return
+    }
+
+    timeblocks[timeblockId].Title=newTitle
 }
 
 // make new time block with random id
@@ -114,3 +143,5 @@ func (self *TimeBlock) totalTime() time.Duration {
 func (self *TimeRow) duration() time.Duration {
     return self.EndTime.Sub(self.StartTime)
 }
+
+func (self *TimeBlock) removeTimeRow(timerowId string) {
