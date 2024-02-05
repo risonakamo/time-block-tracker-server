@@ -4,6 +4,7 @@ package time_block_tracker
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -144,4 +145,14 @@ func (self *TimeRow) duration() time.Duration {
     return self.EndTime.Sub(self.StartTime)
 }
 
+// remove timerow from timeblock
 func (self *TimeBlock) removeTimeRow(timerowId string) {
+    for i := range self.Timerows {
+        if self.Timerows[i].Id==timerowId {
+            self.Timerows=slices.Delete(self.Timerows,i,i+1)
+            return
+        }
+    }
+
+    fmt.Printf("failed to find timerow id: %v\n",timerowId)
+}
