@@ -1,6 +1,6 @@
 // functions dealing with timeblock struct
 
-package time_block_tracker
+package timeblocks
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ type TimeRow struct {
 
 // add a timeblock to timeblocks dict. MUTATES the timeblock
 // dict (but also returns same pointer)
-func addTimeBlock(timeblocks TimeBlocks) TimeBlocks {
+func AddTimeBlock(timeblocks TimeBlocks) TimeBlocks {
     var newblock TimeBlock=newTimeBlock()
 
     timeblocks[newblock.Id]=&newblock
@@ -45,7 +45,7 @@ func addTimeBlock(timeblocks TimeBlocks) TimeBlocks {
 }
 
 // toggle running state of a time block in time blocks dict
-func toggleTimeBlock(timeblocks TimeBlocks,timeblockId string) {
+func ToggleTimeBlock(timeblocks TimeBlocks,timeblockId string) {
     var exists bool
     _,exists=timeblocks[timeblockId]
 
