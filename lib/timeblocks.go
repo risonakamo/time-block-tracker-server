@@ -1,6 +1,6 @@
 // functions dealing with timeblock struct
 
-package time_block_tracker
+package timeblocks
 
 import (
 	"fmt"
