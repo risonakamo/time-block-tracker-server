@@ -36,4 +36,6 @@ func main() {
 	app.Get("/time-blocks",func (c *fiber.Ctx) error {
 		return c.JSON(blocks)
 	})
+
+	app.Listen(":4200")
 }
