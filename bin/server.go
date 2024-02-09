@@ -6,6 +6,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
@@ -15,6 +16,11 @@ func main() {
 	})
 
 	var blocks timeblocks.TimeBlocks=make(timeblocks.TimeBlocks)
+	blocks["asdasd"]=&timeblocks.TimeBlock{
+		Title:"hello",
+	}
+
+
 
 	// add a time block
 	app.Post("/new-time-block",func (c *fiber.Ctx) error {
@@ -36,6 +42,11 @@ func main() {
 	app.Get("/time-blocks",func (c *fiber.Ctx) error {
 		return c.JSON(blocks)
 	})
+
+	app.Use(cors.New(cors.Config {
+		AllowOrigins:"http://localhost:4200",
+		AllowHeaders:"Origin, Content-Type, Accept",
+	}))
 
 	app.Listen(":4200")
 }
