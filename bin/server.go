@@ -12,7 +12,7 @@ func main() {
 	// --- states ---
 	// var blocks timeblocks.TimeBlocks=make(timeblocks.TimeBlocks)
 	var blocks timeblocks.TimeBlocks=timeblocks.TimeBlocks {
-		"id":&timeblocks.TimeBlock{
+		"asdasd":&timeblocks.TimeBlock{
 			Id: timeblocks.GenUUid(),
 			Title: "1/sk",
 			Timerows: []timeblocks.TimeRow {
@@ -58,7 +58,7 @@ func main() {
 
 	// get all current time blocks
 	app.Get("/time-blocks",func (c *fiber.Ctx) error {
-		return c.JSON(blocks)
+		return c.JSON(timeblocks.UpgradeTimeblocks(blocks))
 	})
 
 	app.Listen(":4201")

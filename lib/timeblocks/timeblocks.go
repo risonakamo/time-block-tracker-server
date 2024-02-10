@@ -14,13 +14,22 @@ import (
 // key: timeblock id
 // val: the timeblock
 type TimeBlocks map[string]*TimeBlock
+type TimeBlocks2 map[string]*TimeBlock2
 
 // main time block struct
 type TimeBlock struct {
-    Id string
-    Title string
+    Id string `json:"id"`
+    Title string `json:"title"`
 
-    Timerows []TimeRow
+    Timerows []TimeRow `json:"timerows"`
+}
+
+// upgraded timeblock with additional derived fields
+type TimeBlock2 struct {
+    TimeBlock
+
+    TotalTime int `json:"totalTime"`
+    Running bool `json:"running"`
 }
 
 // time row in a time block
@@ -179,4 +188,26 @@ func ParseShortDate(datestring string) time.Time {
     }
 
     return res
+}
+
+// upgrade timeblock to timeblock2
+func (timeblock *TimeBlock) Upgrade() *TimeBlock2 {
+    return &TimeBlock2{
+        TimeBlock: *timeblock,
+        TotalTime: int(timeblock.totalTime().Minutes()),
+        Running: timeblock.running(),
+    }
+}
+
+// convert all timeblocks in timeblock dict to timeblock2 array
+func UpgradeTimeblocks(blocks TimeBlocks) TimeBlocks2 {
+    var upgradedBlocks TimeBlocks2=TimeBlocks2{}
+
+    var key string
+    var timeblock *TimeBlock
+    for key,timeblock = range blocks {
+        upgradedBlocks[key]=timeblock.Upgrade()
+    }
+
+    return upgradedBlocks
 }
