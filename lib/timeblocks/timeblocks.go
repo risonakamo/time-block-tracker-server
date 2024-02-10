@@ -76,14 +76,14 @@ func changeTimeBlockTitle(
 // make new time block with random id
 func newTimeBlock() TimeBlock {
     return TimeBlock {
-        Id:uuid.New().String()[0:6],
+        Id:GenUUid(),
     }
 }
 
 // make new timerow with random id, and the time set to now
 func newTimeRow() TimeRow {
     return TimeRow {
-        Id:uuid.New().String()[0:6],
+        Id:GenUUid(),
         StartTime:time.Now(),
         Ongoing:true,
     }
@@ -91,22 +91,22 @@ func newTimeRow() TimeRow {
 
 // toggle running state of time block. adds a time row if the time block is not
 // ongoing, or stops the running timerow
-func (self *TimeBlock) ToggleTimer() {
-    if !self.running() {
-        self.addTimeRow()
+func (timeblock *TimeBlock) ToggleTimer() {
+    if !timeblock.running() {
+        timeblock.addTimeRow()
     } else {
-        self.Timerows[len(self.Timerows)-1].stop()
+        timeblock.Timerows[len(timeblock.Timerows)-1].stop()
     }
 }
 
 // return if a time block is running or not. it is running if the last time row is ongoing
-func (self *TimeBlock) running() bool {
+func (timeblock *TimeBlock) running() bool {
     // if no timerows, timeblock is not running
-    if len(self.Timerows)==0 {
+    if len(timeblock.Timerows)==0 {
         return false
     }
 
-    if self.Timerows[len(self.Timerows)-1].Ongoing {
+    if timeblock.Timerows[len(timeblock.Timerows)-1].Ongoing {
         return true
     }
 
@@ -114,45 +114,69 @@ func (self *TimeBlock) running() bool {
 }
 
 // adds a time row to a time block. only works if timeblock is not running
-func (self *TimeBlock) addTimeRow() {
-    if self.running() {
+func (timeblock *TimeBlock) addTimeRow() {
+    if timeblock.running() {
         fmt.Println("refused to add time row, timeblock already running")
         return
     }
 
-    self.Timerows=append(self.Timerows,newTimeRow())
+    timeblock.Timerows=append(timeblock.Timerows,newTimeRow())
 }
 
 // closes a time row, setting the end time to Now
-func (self *TimeRow) stop() {
-    self.EndTime=time.Now()
-    self.Ongoing=false
+func (timerow *TimeRow) stop() {
+    timerow.EndTime=time.Now()
+    timerow.Ongoing=false
 }
 
 // compute total time of all timerows
-func (self *TimeBlock) totalTime() time.Duration {
+func (timeblock *TimeBlock) totalTime() time.Duration {
     var totalTime time.Duration
 
-    for i := range self.Timerows {
-        totalTime=totalTime+self.Timerows[i].duration()
+    for i := range timeblock.Timerows {
+        totalTime=totalTime+timeblock.Timerows[i].duration()
     }
 
     return totalTime
 }
 
 // compute duration of time row. invalid if still ongoing
-func (self *TimeRow) duration() time.Duration {
-    return self.EndTime.Sub(self.StartTime)
+func (timerow *TimeRow) duration() time.Duration {
+    return timerow.EndTime.Sub(timerow.StartTime)
 }
 
 // remove timerow from timeblock
-func (self *TimeBlock) removeTimeRow(timerowId string) {
-    for i := range self.Timerows {
-        if self.Timerows[i].Id==timerowId {
-            self.Timerows=slices.Delete(self.Timerows,i,i+1)
+func (timeblock *TimeBlock) removeTimeRow(timerowId string) {
+    for i := range timeblock.Timerows {
+        if timeblock.Timerows[i].Id==timerowId {
+            timeblock.Timerows=slices.Delete(timeblock.Timerows,i,i+1)
             return
         }
     }
 
     fmt.Printf("failed to find timerow id: %v\n",timerowId)
+}
+
+// return a short uuid
+func GenUUid() string {
+    return uuid.New().String()[0:6]
+}
+
+// parse custom short date string
+func ParseShortDate(datestring string) time.Time {
+    var res time.Time
+    var e error
+
+    res,e=time.Parse(
+        "01/02 15:04",
+        datestring,
+    )
+
+    res=res.AddDate(2024,0,0)
+
+    if e!=nil {
+        fmt.Println("failed to parse time string:",datestring)
+    }
+
+    return res
 }

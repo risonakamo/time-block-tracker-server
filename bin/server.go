@@ -10,7 +10,21 @@ import (
 
 func main() {
 	// --- states ---
-	var blocks timeblocks.TimeBlocks=make(timeblocks.TimeBlocks)
+	// var blocks timeblocks.TimeBlocks=make(timeblocks.TimeBlocks)
+	var blocks timeblocks.TimeBlocks=timeblocks.TimeBlocks {
+		"id":&timeblocks.TimeBlock{
+			Id: timeblocks.GenUUid(),
+			Title: "1/sk",
+			Timerows: []timeblocks.TimeRow {
+				timeblocks.TimeRow {
+					Id: timeblocks.GenUUid(),
+					StartTime: timeblocks.ParseShortDate("01/20 21:58"),
+					EndTime: timeblocks.ParseShortDate("01/20 22:10"),
+					Ongoing: false,
+				},
+			},
+		},
+	}
 
 
 
