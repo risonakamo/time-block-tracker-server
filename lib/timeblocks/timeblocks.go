@@ -34,13 +34,15 @@ type TimeBlock2 struct {
 
 // time row in a time block
 type TimeRow struct {
-    Id string
+    Id string `json:"id"`
 
-    StartTime time.Time
+    StartTime time.Time `json:"startTimeRaw"`
     // only valid if Ongoing is false
-    EndTime time.Time
+    EndTime time.Time `json:"endTimeRaw"`
 
-    Ongoing bool
+    Ongoing bool `json:"ongoing"`
+
+    DurationField int `json:"duration"`
 }
 
 // add a timeblock to timeblocks dict. MUTATES the timeblock
@@ -190,9 +192,13 @@ func ParseShortDate(datestring string) time.Time {
     return res
 }
 
-// upgrade timeblock to timeblock2
+// upgrade timeblock to timeblock2. also upgrades all the timerows in the timeblock
 func (timeblock *TimeBlock) Upgrade() *TimeBlock2 {
-    return &TimeBlock2{
+    for i := range timeblock.Timerows {
+        timeblock.Timerows[i].Upgrade()
+    }
+
+    return &TimeBlock2 {
         TimeBlock: *timeblock,
         TotalTime: int(timeblock.totalTime().Minutes()),
         Running: timeblock.running(),
@@ -210,4 +216,11 @@ func UpgradeTimeblocks(blocks TimeBlocks) TimeBlocks2 {
     }
 
     return upgradedBlocks
+}
+
+// fill in duration of time row
+func (timerow *TimeRow) Upgrade() {
+    if !timerow.Ongoing {
+        timerow.DurationField=int(timerow.duration().Minutes())
+    }
 }
